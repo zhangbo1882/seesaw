@@ -21,3 +21,8 @@ proto:
 
 test: all
 	go test ./...
+
+binaries = seesaw_cli seesaw_ecu seesaw_engine seesaw_ha seesaw_healthcheck seesaw_ncc seesaw_watchdog
+
+$(binaries):
+	cd binaries/$@; go build -x;

@@ -261,6 +261,16 @@ func (svc Service) String() string {
 	}
 }
 
+// Details returns a string represent service details.
+func (svc Service) Details() string {
+	switch {
+	case svc.Address.To4() == nil:
+		return fmt.Sprintf("%v [%v]:%d (%s) - %d %x %d %s", svc.Protocol, svc.Address, svc.Port, svc.Scheduler, svc.FirewallMark, svc.Flags, svc.Timeout, svc.PersistenceEngine)
+	default:
+		return fmt.Sprintf("%v %v:%d (%s) - %d %x %d %s", svc.Protocol, svc.Address, svc.Port, svc.Scheduler, svc.FirewallMark, svc.Flags, svc.Timeout, svc.PersistenceEngine)
+	}
+}
+
 // DestinationFlags specifies the flags for a connection to an IPVS destination.
 type DestinationFlags uint32
 

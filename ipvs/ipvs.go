@@ -261,7 +261,7 @@ func (svc Service) String() string {
 	}
 }
 
-// Details returns a string represent service details.
+// Details returns a string representing service details.
 func (svc Service) Details() string {
 	switch {
 	case svc.Address.To4() == nil:
@@ -311,6 +311,15 @@ func (dest Destination) String() string {
 		addr = fmt.Sprintf("[%s]", addr)
 	}
 	return fmt.Sprintf("%s:%d", addr, dest.Port)
+}
+
+// Details returns a string representing destination details.
+func (dest Destination) Details() string {
+	addr := dest.Address.String()
+	if dest.Address.To4() == nil {
+		return fmt.Sprintf("[%s] - %d %x %d %d", addr, dest.Weight, dest.Flags, dest.LowerThreshold, dest.UpperThreshold)
+	}
+	return fmt.Sprintf("%s:%d - %d %x %d %d", addr, dest.Port, dest.Weight, dest.Flags, dest.LowerThreshold, dest.UpperThreshold)
 }
 
 type Stats struct {

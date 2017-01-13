@@ -1,0 +1,62 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "RSi7QpjPy007TrhCkFk2XYYX/g8=",
+			"path": "github.com/dlintw/goconf",
+			"revision": "dcc070983490608a14480e3bf943bad464785df5",
+			"revisionTime": "2012-02-28T08:26:10Z"
+		},
+		{
+			"checksumSHA1": "URsJa4y/sUUw/STmbeYx9EKqaYE=",
+			"path": "github.com/golang/glog",
+			"revision": "44145f04b68cf362d9c4df2182967c2275eaefed",
+			"revisionTime": "2014-09-23T20:47:00Z"
+		},
+		{
+			"checksumSHA1": "zb7w9zrHw5g5IFXHe6zX2eD7q2Q=",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "8616e8ee5e20a1704615e6c8d7afcdac06087a67",
+			"revisionTime": "2016-06-08T21:55:45Z"
+		},
+		{
+			"checksumSHA1": "BuNkhLHiFTdc5KZLS9/3K8SiM7M=",
+			"path": "github.com/google/seesaw",
+			"revision": "f11734aa58f0f45d1715844228955a05cdc06f67",
+			"revisionTime": "2016-06-02T05:38:19Z",
+			"tree": true
+		},
+		{
+			"checksumSHA1": "0xjvz/KGzXhAFsnDRvzofE0xNzI=",
+			"path": "github.com/kylelemons/godebug/diff",
+			"revision": "d99083b96f422f8fd5a93bc02040acec769e178f",
+			"revisionTime": "2016-11-09T21:01:02Z"
+		},
+		{
+			"checksumSHA1": "ql0/7EZAK4Bbj1mkcj095UPfuK4=",
+			"path": "github.com/kylelemons/godebug/pretty",
+			"revision": "d99083b96f422f8fd5a93bc02040acec769e178f",
+			"revisionTime": "2016-11-09T21:01:02Z"
+		},
+		{
+			"checksumSHA1": "SbFX25FpQ+Zq0Zrq/A0bcbW4Z5c=",
+			"path": "github.com/miekg/dns",
+			"revision": "ca336a1f95a6b89be9c250df26c7a41742eb4a6f",
+			"revisionTime": "2017-01-04T07:55:54Z"
+		},
+		{
+			"checksumSHA1": "bA2gANkJBx2Br/p5GKYdhyGo3Pg=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "1f22c0103821b9390939b6776727195525381532",
+			"revisionTime": "2016-01-26T17:50:25Z"
+		},
+		{
+			"checksumSHA1": "vu7njn8O4vhFtmgGWntwjA2NAbk=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9",
+			"revisionTime": "2016-09-14T20:33:16Z"
+		}
+	],
+	"rootPath": "github.com/google/seesaw"
+}

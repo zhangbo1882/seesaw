@@ -4,3 +4,12 @@
 *.un~
 Session.vim
 .netrwhist
+
+# output related
+/_output
+
+# Go test binaries
+*.test
+
+# env file
+.env

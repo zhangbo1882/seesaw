@@ -21,13 +21,6 @@
 			"revisionTime": "2016-06-08T21:55:45Z"
 		},
 		{
-			"checksumSHA1": "BuNkhLHiFTdc5KZLS9/3K8SiM7M=",
-			"path": "github.com/google/seesaw",
-			"revision": "f11734aa58f0f45d1715844228955a05cdc06f67",
-			"revisionTime": "2016-06-02T05:38:19Z",
-			"tree": true
-		},
-		{
 			"checksumSHA1": "0xjvz/KGzXhAFsnDRvzofE0xNzI=",
 			"path": "github.com/kylelemons/godebug/diff",
 			"revision": "d99083b96f422f8fd5a93bc02040acec769e178f",

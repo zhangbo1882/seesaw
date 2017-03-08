@@ -33,7 +33,10 @@ import (
 */
 import "C"
 
-const familyName = "IPVS"
+const (
+	familyName = "IPVS"
+	nlMaxBytes = 512
+)
 
 var (
 	family int
@@ -72,9 +75,15 @@ type ipvsService struct {
 	PersistenceEngine string        `netlink:"attr:11,omitempty,optional"`
 }
 
+type ipvsServiceData struct {
+	Indices [nlMaxBytes]byte `netlink:"attr:1"`
+}
+
 type ipvsCommand struct {
 	Service     *ipvsService     `netlink:"attr:1,omitempty,optional"`
 	Destination *ipvsDestination `netlink:"attr:2,omitempty,optional"`
+	/* NOTE(qiuyu): Be aware of future kernel ABI change */
+	ServiceData *ipvsServiceData `netlink:"attr:7,omitempty,optional"`
 }
 
 // newIPVSService converts a service to its IPVS representation.
@@ -99,6 +108,15 @@ func newIPVSService(svc *Service) *ipvsService {
 	}
 
 	return ipvsSvc
+}
+
+// newIPVSServiceData converts a bin data to its IPVS representation.
+func newIPVSServiceData(b []byte) *ipvsServiceData {
+	// copy only does minion of len(b) and data
+	ipvsSvcData := &ipvsServiceData{}
+	copy(ipvsSvcData.Indices[:], b)
+
+	return ipvsSvcData
 }
 
 // newIPVSDestination converts a destination to its IPVS representation.
@@ -416,6 +434,17 @@ func AddService(svc Service) error {
 func UpdateService(svc Service) error {
 	ic := &ipvsCommand{Service: newIPVSService(&svc)}
 	return netlink.SendMessageMarshalled(C.IPVS_CMD_SET_SERVICE, family, 0, ic)
+}
+
+// UpdateServiceData update data for specified service in the IPVS table.
+func UpdateServiceData(svc Service, data []byte) error {
+
+	ic := &ipvsCommand{
+		Service:     newIPVSService(&svc),
+		ServiceData: newIPVSServiceData(data),
+	}
+	/* NOTE(qiuyu): Be aware of future kernel ABI change */
+	return netlink.SendMessageMarshalled(C.IPVS_CMD_MAX+1, family, 0, ic)
 }
 
 // DeleteService deletes the specified service from the IPVS table.

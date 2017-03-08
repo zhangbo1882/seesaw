@@ -47,6 +47,12 @@ type IPVSServices struct {
 	Services []*ipvs.Service
 }
 
+// IPVSServiceData specifies an IPVS service data and its associated service.
+type IPVSServiceData struct {
+	Service     *ipvs.Service
+	ServiceData []byte
+}
+
 // IPVSDestination specifies an IPVS destination and its associated service.
 type IPVSDestination struct {
 	Service     *ipvs.Service

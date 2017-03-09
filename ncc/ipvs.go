@@ -91,11 +91,11 @@ func (ncc *SeesawNCC) IPVSUpdateService(svc *ipvs.Service, out *int) error {
 	return ipvs.UpdateService(*svc)
 }
 
-// IPVSUpdateServiceData updates data for specific service in the IPVS table.
-func (ncc *SeesawNCC) IPVSUpdateServiceData(data *ncctypes.IPVSServiceData, out *int) error {
+// IPVSSetServiceData updates data for specific service in the IPVS table.
+func (ncc *SeesawNCC) IPVSSetServiceData(data *ncctypes.IPVSServiceData, out *int) error {
 	ipvsMutex.Lock()
 	defer ipvsMutex.Unlock()
-	return ipvs.UpdateServiceData(*data.Service, data.ServiceData)
+	return ipvs.SetServiceData(*data.Service, *data.ServiceData)
 }
 
 // IPVSDeleteService deletes the specified service from the IPVS table.

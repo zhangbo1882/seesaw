@@ -87,8 +87,8 @@ type NCC interface {
 	// IPVSUpdateService updates the specified service in the IPVS table.
 	IPVSUpdateService(svc *ipvs.Service) error
 
-	// IPVSUpdateServiceData updates data for specified service in the IPVS table.
-	IPVSUpdateServiceData(svc *ipvs.Service, data []byte) error
+	// IPVSSetServiceData updates data for specified service in the IPVS table.
+	IPVSSetServiceData(svc *ipvs.Service, data *ipvs.ServiceData) error
 
 	// IPVSDeleteService deletes the specified service from the IPVS table.
 	IPVSDeleteService(svc *ipvs.Service) error
@@ -280,9 +280,9 @@ func (nc *nccClient) IPVSUpdateService(svc *ipvs.Service) error {
 	return nc.call("SeesawNCC.IPVSUpdateService", svc, nil)
 }
 
-func (nc *nccClient) IPVSUpdateServiceData(svc *ipvs.Service, data []byte) error {
+func (nc *nccClient) IPVSSetServiceData(svc *ipvs.Service, data *ipvs.ServiceData) error {
 	svcData := ncctypes.IPVSServiceData{Service: svc, ServiceData: data}
-	return nc.call("SeesawNCC.IPVSUpdateServiceData", svcData, nil)
+	return nc.call("SeesawNCC.IPVSSetServiceData", svcData, nil)
 }
 
 func (nc *nccClient) IPVSDeleteService(svc *ipvs.Service) error {

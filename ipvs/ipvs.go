@@ -76,7 +76,8 @@ type ipvsService struct {
 }
 
 type ipvsServiceData struct {
-	Indices [nlMaxBytes]byte `netlink:"attr:1"`
+	Version uint32           `netlink:"attr:1"`
+	Indices [nlMaxBytes]byte `netlink:"attr:2"`
 }
 
 type ipvsCommand struct {
@@ -110,11 +111,14 @@ func newIPVSService(svc *Service) *ipvsService {
 	return ipvsSvc
 }
 
-// newIPVSServiceData converts a bin data to its IPVS representation.
-func newIPVSServiceData(b []byte) *ipvsServiceData {
-	// copy only does minion of len(b) and data
-	ipvsSvcData := &ipvsServiceData{}
-	copy(ipvsSvcData.Indices[:], b)
+// newIPVSServiceData converts a service data to its IPVS representation.
+func newIPVSServiceData(data *ServiceData) *ipvsServiceData {
+	ipvsSvcData := &ipvsServiceData{
+		Version: data.Version,
+	}
+
+	// copy from slice to array, only use minimum length of the two
+	copy(ipvsSvcData.Indices[:], data.Indices)
 
 	return ipvsSvcData
 }
@@ -289,6 +293,11 @@ func (svc Service) Details() string {
 	}
 }
 
+type ServiceData struct {
+	Version uint32
+	Indices []byte
+}
+
 // DestinationFlags specifies the flags for a connection to an IPVS destination.
 type DestinationFlags uint32
 
@@ -436,13 +445,14 @@ func UpdateService(svc Service) error {
 	return netlink.SendMessageMarshalled(C.IPVS_CMD_SET_SERVICE, family, 0, ic)
 }
 
-// UpdateServiceData update data for specified service in the IPVS table.
-func UpdateServiceData(svc Service, data []byte) error {
+// SetServiceData update data for specified service in the IPVS table.
+func SetServiceData(svc Service, data ServiceData) error {
 
 	ic := &ipvsCommand{
 		Service:     newIPVSService(&svc),
-		ServiceData: newIPVSServiceData(data),
+		ServiceData: newIPVSServiceData(&data),
 	}
+
 	/* NOTE(qiuyu): Be aware of future kernel ABI change */
 	return netlink.SendMessageMarshalled(C.IPVS_CMD_MAX+1, family, 0, ic)
 }

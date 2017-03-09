@@ -534,6 +534,81 @@ func ipvsAddLoadTest(ncc client.NCC, services, dests int) {
 	log.Printf("Completed IPVS add load test")
 }
 
+var testSvcsWithData = []struct {
+	desc         string
+	service      *ipvs.Service
+	destinations []*ipvs.Destination
+	data         *ipvs.ServiceData
+}{
+	{
+		"IPv4 192.168.2.110 TCP/80 using tbl with 4 destinations and data",
+		&ipvs.Service{
+			Address:   net.ParseIP("192.168.2.110"),
+			Protocol:  syscall.IPPROTO_TCP,
+			Port:      80,
+			Scheduler: "tbl",
+		},
+		[]*ipvs.Destination{
+			{Address: net.ParseIP("192.168.1.3"), Port: 80, Weight: 1},
+			{Address: net.ParseIP("192.168.1.5"), Port: 80, Weight: 2},
+			{Address: net.ParseIP("192.168.1.6"), Port: 80, Weight: 3},
+			{Address: net.ParseIP("192.168.1.7"), Port: 80, Weight: 4},
+		},
+		&ipvs.ServiceData{
+			Version: 1984,
+			Indices: []byte{
+				1, 2,
+				2, 3,
+				3, 4,
+				4, 1,
+			},
+		},
+	},
+}
+
+func ipvsDataTests(ncc client.NCC) {
+
+	// Manipulate the IPVS table.
+	if err := ncc.IPVSFlush(); err != nil {
+		log.Fatalf("Failed to flush the IPVS table: %v", err)
+	}
+
+	for _, test := range testSvcsWithData {
+		log.Printf("Adding IPVS service %v", test.service)
+		if err := ncc.IPVSAddService(test.service); err != nil {
+			log.Fatalf("Failed to add IPVS service: %v", err)
+		}
+
+		log.Printf("Adding %d destinations", len(test.destinations))
+		for i := 0; i < len(test.destinations); i++ {
+			if err := ncc.IPVSAddDestination(test.service, test.destinations[i]); err != nil {
+				log.Fatalf("Failed to add IPVS destination: %v", err)
+			}
+		}
+
+		log.Printf("Setting service data")
+		if err := ncc.IPVSSetServiceData(test.service, test.data); err != nil {
+			log.Fatalf("Failed to add IPVS data: %v", err)
+		}
+
+		svcs, err := ncc.IPVSGetServices()
+		if err != nil {
+			log.Fatalf("Failed to get IPVS services: %v", err)
+		}
+		for _, svc := range svcs {
+			log.Printf("Got IPVS service %v with %d destinations",
+				svc, len(svc.Destinations))
+		}
+		if len(svcs) != 1 {
+			log.Fatalf("IPVSGetServices returned %d services, expected 1", len(svcs))
+		}
+		if len(svcs[0].Destinations) != len(test.destinations) {
+			log.Fatalf("IPVSGetServices returned %d destinations, expected %d",
+				len(svcs[0].Destinations), len(test.destinations))
+		}
+	}
+}
+
 func ipvsTests(ncc client.NCC) {
 
 	// Manipulate the IPVS table.
@@ -620,6 +695,9 @@ func main() {
 	case "ipvs":
 		log.Print("Starting IPVS tests...")
 		ipvsTests(ncc)
+	case "ipvsdata":
+		log.Print("Starting IPVS data tests...")
+		ipvsDataTests(ncc)
 	case "route":
 		log.Print("Starting route tests...")
 		routeTests(ncc)

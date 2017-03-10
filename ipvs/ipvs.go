@@ -454,7 +454,7 @@ func SetServiceData(svc Service, data ServiceData) error {
 	}
 
 	/* NOTE(qiuyu): Be aware of future kernel ABI change */
-	return netlink.SendMessageMarshalled(C.IPVS_CMD_MAX+1, family, 0, ic)
+	return netlink.SendMessageMarshalled(C.IPVS_CMD_MAX+2, family, 0, ic)
 }
 
 // DeleteService deletes the specified service from the IPVS table.

@@ -24,7 +24,7 @@ $(binaries):
 	mkdir -p _output
 	cd binaries/$@; go build -x; mv $@ ../../_output/
 
-test_tools = healthcheck_test_tool ipvs_test_tool ncc_test_tool quagga_test_tool svc_data_test_tool
+test_tools = healthcheck_test_tool ipvs_test_tool ncc_test_tool quagga_test_tool
 $(test_tools):
 	mkdir -p _output
 	cd test_tools/$@; go build -x; mv $@ ../../_output/

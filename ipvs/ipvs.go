@@ -123,6 +123,19 @@ func newIPVSServiceData(data *ServiceData) *ipvsServiceData {
 	return ipvsSvcData
 }
 
+// toServiceData converts a service data entry from its IPVS representation to
+// the Go equivalent ServiceData structure.
+func (ipvsSvcData ipvsServiceData) toServiceData() *ServiceData {
+	svcData := &ServiceData{
+		Version: ipvsSvcData.Version,
+		Indices: make([]byte, nlMaxBytes),
+	}
+
+	copy(svcData.Indices, ipvsSvcData.Indices[:])
+
+	return svcData
+}
+
 // newIPVSDestination converts a destination to its IPVS representation.
 func newIPVSDestination(dst *Destination) *ipvsDestination {
 	return &ipvsDestination{
@@ -443,6 +456,47 @@ func AddService(svc Service) error {
 func UpdateService(svc Service) error {
 	ic := &ipvsCommand{Service: newIPVSService(&svc)}
 	return netlink.SendMessageMarshalled(C.IPVS_CMD_SET_SERVICE, family, 0, ic)
+}
+
+// GetServiceData returns the service data for specified service in the IPVS table.
+func GetServiceData(svc *Service) (*ServiceData, error) {
+
+	var flags int
+
+	/* NOTE(qiuyu): Be aware of future kernel ABI change */
+	msg, err := netlink.NewMessage(C.IPVS_CMD_MAX+3, family, flags)
+	if err != nil {
+		return nil, err
+	}
+	defer msg.Free()
+
+	if svc != nil {
+		ic := &ipvsCommand{Service: newIPVSService(svc)}
+		if err := msg.Marshal(ic); err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, nil
+	}
+
+	var svcData *ServiceData
+	cb := func(msg *netlink.Message, arg interface{}) error {
+		ic := &ipvsCommand{}
+		if err := msg.Unmarshal(ic); err != nil {
+			return fmt.Errorf("failed to unmarshal service: %v", err)
+		}
+		if ic.ServiceData == nil {
+			return errors.New("no service data in unmarshalled message")
+		}
+		svcData = ic.ServiceData.toServiceData()
+		return nil
+	}
+
+	if err := msg.SendCallback(cb, nil); err != nil {
+		return nil, err
+	}
+
+	return svcData, nil
 }
 
 // SetServiceData update data for specified service in the IPVS table.

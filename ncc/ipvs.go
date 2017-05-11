@@ -91,6 +91,20 @@ func (ncc *SeesawNCC) IPVSUpdateService(svc *ipvs.Service, out *int) error {
 	return ipvs.UpdateService(*svc)
 }
 
+// IPVSGetService gets the currently configured service from the IPVS table,
+// which matches the specified service.
+func (ncc *SeesawNCC) IPVSGetServiceData(si *ipvs.Service, out *ncctypes.IPVSServiceData) error {
+	ipvsMutex.Lock()
+	defer ipvsMutex.Unlock()
+	data, err := ipvs.GetServiceData(si)
+	if err != nil {
+		return err
+	}
+	out.Service = si
+	out.ServiceData = data
+	return nil
+}
+
 // IPVSSetServiceData updates data for specific service in the IPVS table.
 func (ncc *SeesawNCC) IPVSSetServiceData(data *ncctypes.IPVSServiceData, out *int) error {
 	ipvsMutex.Lock()

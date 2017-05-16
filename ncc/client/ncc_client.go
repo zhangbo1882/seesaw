@@ -88,7 +88,7 @@ type NCC interface {
 	IPVSUpdateService(svc *ipvs.Service) error
 
 	// IPVSGetServiceData returns data for specified service in the IPVS table.
-	IPVSGetServiceData(svc *ipvs.Service, data *ipvs.ServiceData) error
+	IPVSGetServiceData(svc *ipvs.Service) (*ipvs.ServiceData, error)
 
 	// IPVSSetServiceData updates data for specified service in the IPVS table.
 	IPVSSetServiceData(svc *ipvs.Service, data *ipvs.ServiceData) error

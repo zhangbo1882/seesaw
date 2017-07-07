@@ -270,7 +270,7 @@ func (hc *Check) Run(start <-chan time.Time) {
 	if start != nil {
 		<-start
 	}
-	log.Infof("Starting healthchecker for %d (%s)", hc.Id, hc)
+	log.Infof("Starting healthchecker for 0x%x (%s)", hc.Id, hc)
 
 	ticker := time.NewTicker(hc.Interval)
 	hc.healthcheck()
@@ -309,7 +309,7 @@ func (hc *Check) healthcheck() {
 	if !result.Success {
 		status = "FAILURE"
 	}
-	log.Infof("%d: (%s) %s: %v", hc.Id, hc, status, result)
+	log.Infof("ID 0x%x: (%s) %s: %v", hc.Id, hc, status, result)
 
 	hc.lock.Lock()
 

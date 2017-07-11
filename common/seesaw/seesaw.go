@@ -301,12 +301,14 @@ const (
 	LBModeNone LBMode = iota
 	LBModeDSR
 	LBModeNAT
+	LBModeTunnel
 )
 
 var modeNames = map[LBMode]string{
-	LBModeNone: "None",
-	LBModeDSR:  "DSR",
-	LBModeNAT:  "NAT",
+	LBModeNone:   "None",
+	LBModeDSR:    "DSR",
+	LBModeNAT:    "NAT",
+	LBModeTunnel: "TUNNEL",
 }
 
 // String returns the string representation of a LBMode.

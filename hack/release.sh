@@ -13,7 +13,7 @@ set -a
 set +a
 
 export GITHUB_API="${GITHUB_API:-https://github.corp.ebay.com/api/v3}"
-export GITHUB_USER="${GITHUB_USER:-qiuyu}"
+export GITHUB_USER="${GITHUB_USER:-ufes-dev}"
 export GITHUB_REPO="${GITHUB_REPO:-seesaw}"
 
 git tag $1

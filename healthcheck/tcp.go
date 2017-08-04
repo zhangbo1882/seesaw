@@ -36,6 +36,7 @@ const (
 // TCPChecker contains configuration specific to a TCP healthcheck.
 type TCPChecker struct {
 	Target
+	Source    Source
 	Receive   string
 	Send      string
 	Secure    bool
@@ -78,7 +79,12 @@ func (hc *TCPChecker) Check(timeout time.Duration) *Result {
 	}
 	deadline := start.Add(timeout)
 
-	tcpConn, err := dialTCP(hc.network(), hc.addr(), timeout, hc.Mark)
+	var srcIP net.IP
+	if hc.Mark != 0 && hc.Source.IP != nil {
+		srcIP = hc.Source.IP
+	}
+	tcpConn, err := dialTCP(hc.network(), hc.addr(), timeout, hc.Mark, srcIP)
+
 	if err != nil {
 		msg = fmt.Sprintf("%s; failed to connect", msg)
 		return complete(start, msg, false, err)

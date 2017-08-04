@@ -43,6 +43,7 @@ func init() {
 // PingChecker contains configuration specific to a ping healthcheck.
 type PingChecker struct {
 	Target
+	Source Source
 	ID     uint16
 	Seqnum uint16
 }

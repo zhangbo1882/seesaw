@@ -39,6 +39,7 @@ const (
 // HTTPChecker contains configuration specific to a HTTP healthcheck.
 type HTTPChecker struct {
 	Target
+	Source       Source
 	Secure       bool
 	TLSVerify    bool
 	Method       string
@@ -109,7 +110,11 @@ func (hc *HTTPChecker) Check(timeout time.Duration) *Result {
 		proxy = http.ProxyURL(u)
 	}
 
-	conn, err := dialTCP(hc.network(), hc.addr(), timeout, hc.Mark)
+	var srcIP net.IP
+	if hc.Mark != 0 && hc.Source.IP != nil {
+		srcIP = hc.Source.IP
+	}
+	conn, err := dialTCP(hc.network(), hc.addr(), timeout, hc.Mark, srcIP)
 	if err != nil {
 		return complete(start, "", false, err)
 	}

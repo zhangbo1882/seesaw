@@ -45,6 +45,7 @@ func DNSType(name string) (uint16, error) {
 // DNSChecker contains configuration specific to a DNS healthcheck.
 type DNSChecker struct {
 	Target
+	Source   Source
 	Question dns.Question
 	Answer   string
 }

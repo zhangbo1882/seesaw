@@ -33,6 +33,7 @@ const (
 // UDPChecker contains configuration specific to a UDP healthcheck.
 type UDPChecker struct {
 	Target
+	Source  Source
 	Receive string
 	Send    string
 }

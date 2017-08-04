@@ -77,6 +77,11 @@ type Checker interface {
 	String() string
 }
 
+// Source specifies the optional source info for a healthcheck.
+type Source struct {
+	IP net.IP // IP address of the healthcheck source.
+}
+
 // Target specifies the target for a healthcheck.
 type Target struct {
 	IP    net.IP // IP address of the healthcheck target.

@@ -65,7 +65,7 @@ func sockaddrToString(sa syscall.Sockaddr) string {
 // dialTCP dials a TCP connection to the specified host and sets marking on the
 // socket. The host must be given as an IP address. A mark of zero results in a
 // normal (non-marked) connection.
-func dialTCP(network, addr string, timeout time.Duration, mark int) (nc net.Conn, err error) {
+func dialTCP(network, addr string, timeout time.Duration, mark int, srcIP net.IP) (nc net.Conn, err error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return nil, err
@@ -120,6 +120,19 @@ func dialTCP(network, addr string, timeout time.Duration, mark int) (nc net.Conn
 	if mark != 0 {
 		if err := setSocketMark(c.fd, mark); err != nil {
 			return nil, err
+		}
+
+		// TODO(qiuyu): IPv6 support
+		if network == "tcp6" {
+			return nil, fmt.Errorf("unsupported network %q", network)
+		}
+
+		var lsa syscall.Sockaddr
+		lsa4 := &syscall.SockaddrInet4{Port: int(0)}
+		copy(lsa4.Addr[:], srcIP.To4())
+		lsa = lsa4
+		if err := syscall.Bind(c.fd, lsa); err != nil {
+			return nil, os.NewSyscallError("bind", err)
 		}
 	}
 

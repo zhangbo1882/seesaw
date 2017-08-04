@@ -284,6 +284,7 @@ func responseAuthenticator(rp *radiusPacket, requestAuthenticator *radiusAuthent
 // RADIUSChecker contains configuration specific to a RADIUS healthcheck.
 type RADIUSChecker struct {
 	Target
+	Source   Source
 	Username string
 	Password string
 	Secret   string

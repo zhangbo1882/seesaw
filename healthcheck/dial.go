@@ -127,12 +127,14 @@ func dialTCP(network, addr string, timeout time.Duration, mark int, srcIP net.IP
 			return nil, fmt.Errorf("unsupported network %q", network)
 		}
 
-		var lsa syscall.Sockaddr
-		lsa4 := &syscall.SockaddrInet4{Port: int(0)}
-		copy(lsa4.Addr[:], srcIP.To4())
-		lsa = lsa4
-		if err := syscall.Bind(c.fd, lsa); err != nil {
-			return nil, os.NewSyscallError("bind", err)
+		if srcIP != nil {
+			var lsa syscall.Sockaddr
+			lsa4 := &syscall.SockaddrInet4{Port: int(0)}
+			copy(lsa4.Addr[:], srcIP.To4())
+			lsa = lsa4
+			if err := syscall.Bind(c.fd, lsa); err != nil {
+				return nil, os.NewSyscallError("bind", err)
+			}
 		}
 	}
 

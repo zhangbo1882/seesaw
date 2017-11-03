@@ -25,11 +25,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/seesaw/common/seesaw"
 	"github.com/google/seesaw/healthcheck"
 )
 
 var (
 	hcType       = flag.String("type", "ping", "healthcheck type")
+	hcMode       = flag.String("mode", "plain", "healthcheck mode (plain|dsr)")
 	ip           = flag.String("ip", "127.0.0.1", "IP address to check")
 	port         = flag.Int("port", 80, "port to check")
 	mark         = flag.Int("mark", 0, "mark to use for network traffic")
@@ -42,6 +44,8 @@ var (
 	response     = flag.String("response", "", "expected HTTP(S) response")
 	responseCode = flag.Int("response_code", 200, "expected HTTP(S) response code")
 	tlsVerify    = flag.Bool("tls_verify", true, "enable TLS verification for HTTPS and TCP TLS")
+	src          = flag.String("src", "", "source IP address to use for DSR healthcheck")
+	via          = flag.String("via", "127.0.0.1", "via host IP address for DSR")
 
 	dnsAnswer    = flag.String("answer", "", "DNS answer expected from query")
 	dnsQuery     = flag.String("query", "", "DNS query to perform")
@@ -74,7 +78,7 @@ func unquote(s string) string {
 	return us
 }
 
-func doDNSCheck(target net.IP) {
+func doDNSCheck(target net.IP, source net.IP, host net.IP) {
 	qt, err := healthcheck.DNSType(*dnsQueryType)
 	if err != nil {
 		log.Fatal(err)
@@ -84,10 +88,15 @@ func doDNSCheck(target net.IP) {
 	hc.Answer = *dnsAnswer
 	hc.Question.Name = *dnsQuery
 	hc.Question.Qtype = qt
+	hc.Source.IP = source
+	if *hcMode == "dsr" {
+		hc.Mode = seesaw.HCModeDSR
+		hc.Host = host
+	}
 	check(hc)
 }
 
-func doHTTPCheck(target net.IP, secure bool) {
+func doHTTPCheck(target net.IP, source net.IP, host net.IP, secure bool) {
 	hc := healthcheck.NewHTTPChecker(target, *port)
 	hc.Mark = *mark
 	hc.Secure = secure
@@ -97,12 +106,22 @@ func doHTTPCheck(target net.IP, secure bool) {
 	hc.Method = *method
 	hc.Proxy = *proxy
 	hc.TLSVerify = *tlsVerify
+	hc.Source.IP = source
+	if *hcMode == "dsr" {
+		hc.Mode = seesaw.HCModeDSR
+		hc.Host = host
+	}
 	check(hc)
 }
 
-func doPingCheck(target net.IP) {
+func doPingCheck(target net.IP, source net.IP, host net.IP) {
 	pc := healthcheck.NewPingChecker(target)
 	pc.Mark = *mark
+	pc.Source.IP = source
+	if *hcMode == "dsr" {
+		pc.Mode = seesaw.HCModeDSR
+		pc.Host = host
+	}
 	received := 0
 	for i := 0; i < *count; i++ {
 		r := pc.Check(time.Duration(0))
@@ -116,58 +135,79 @@ func doPingCheck(target net.IP) {
 	log.Printf("Sent %d packets, received %d replies", *count, received)
 }
 
-func doRADIUSCheck(target net.IP) {
+func doRADIUSCheck(target net.IP, source net.IP, host net.IP) {
 	hc := healthcheck.NewRADIUSChecker(target, *port)
 	hc.Mark = *mark
 	hc.Username = *radiusUser
 	hc.Password = *radiusPasswd
 	hc.Response = *radiusResponse
 	hc.Secret = *radiusSecret
+	hc.Source.IP = source
+	if *hcMode == "dsr" {
+		hc.Mode = seesaw.HCModeDSR
+		hc.Host = host
+	}
 	check(hc)
 }
 
-func doTCPCheck(target net.IP, secure bool) {
+func doTCPCheck(target net.IP, source net.IP, host net.IP, secure bool) {
 	hc := healthcheck.NewTCPChecker(target, *port)
 	hc.Mark = *mark
 	hc.Receive = unquote(*receive)
 	hc.Send = unquote(*send)
 	hc.Secure = secure
 	hc.TLSVerify = *tlsVerify
+	hc.Source.IP = source
+	if *hcMode == "dsr" {
+		hc.Mode = seesaw.HCModeDSR
+		hc.Host = host
+	}
 	check(hc)
 }
 
-func doUDPCheck(target net.IP) {
+func doUDPCheck(target net.IP, source net.IP, host net.IP) {
 	hc := healthcheck.NewUDPChecker(target, *port)
 	hc.Mark = *mark
 	hc.Receive = unquote(*receive)
 	hc.Send = unquote(*send)
+	hc.Source.IP = source
+	if *hcMode == "dsr" {
+		hc.Mode = seesaw.HCModeDSR
+		hc.Host = host
+	}
 	check(hc)
 }
 
 func main() {
 	flag.Parse()
+	source := net.ParseIP(*src)
 	target := net.ParseIP(*ip)
 	if target == nil {
 		log.Fatalf("Invalid IP address: %v", *ip)
 	}
 
+	host := net.ParseIP(*via)
+	if *hcMode == "dsr" && host == nil {
+		log.Fatalf("Invalid Host IP address for DSR: %v", *via)
+	}
+
 	switch *hcType {
 	case "dns":
-		doDNSCheck(target)
+		doDNSCheck(target, source, host)
 	case "http":
-		doHTTPCheck(target, false)
+		doHTTPCheck(target, source, host, false)
 	case "https":
-		doHTTPCheck(target, true)
+		doHTTPCheck(target, source, host, true)
 	case "ping":
-		doPingCheck(target)
+		doPingCheck(target, source, host)
 	case "radius":
-		doRADIUSCheck(target)
+		doRADIUSCheck(target, source, host)
 	case "tcp":
-		doTCPCheck(target, false)
+		doTCPCheck(target, source, host, false)
 	case "tcp_tls":
-		doTCPCheck(target, true)
+		doTCPCheck(target, source, host, true)
 	case "udp":
-		doUDPCheck(target)
+		doUDPCheck(target, source, host)
 	default:
 		log.Fatalf("Unsupported healthcheck type: %q", *hcType)
 	}

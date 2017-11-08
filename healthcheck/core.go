@@ -585,15 +585,23 @@ func (s *Server) notifier() {
 // send sends a batch of notifications to the Seesaw Engine, retrying on any
 // error and giving up after MaxFailures.
 func (s *Server) send() error {
+	var err error
 	failures := 0
-	for err := s.sendBatch(s.batch); err != nil; {
-		log.Errorf("Send failed: %v", err)
-		failures++
-		if failures > s.config.MaxFailures {
-			return fmt.Errorf("send: %d errors, giving up", failures)
+	for failures < s.config.MaxFailures {
+		err = s.sendBatch(s.batch)
+		if err == nil {
+			break
 		}
+
+		failures++
+		log.Errorf("Send failed: %v, %d times", err, failures)
 		time.Sleep(s.config.RetryDelay)
 	}
+
+	if failures >= s.config.MaxFailures {
+		return fmt.Errorf("send: %d errors, giving up", failures)
+	}
+
 	s.batch = s.batch[:0]
 	return nil
 }

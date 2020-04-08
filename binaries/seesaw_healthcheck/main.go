@@ -56,13 +56,12 @@ func main() {
 	flag.Parse()
 
 	cfg := healthcheck.DefaultServerConfig()
-
+	cfg.BatchDelay = *batchDelay
 	cfg.BatchSize = *batchSize
 	cfg.ChannelSize = *channelSize
 	cfg.EngineSocket = *engineSocket
 	cfg.MaxFailures = *maxFailures
 	cfg.RetryDelay = *retryDelay
-
 	hc := healthcheck.NewServer(&cfg)
 	server.ShutdownHandler(hc)
 	hc.Run()

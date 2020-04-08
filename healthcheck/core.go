@@ -32,7 +32,7 @@ import (
 	log "github.com/golang/glog"
 )
 
-const engineTimeout = 10 * time.Second
+const engineTimeout = 30 * time.Second
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
@@ -567,12 +567,15 @@ func (s *Server) notifier() {
 			switch len(s.batch) {
 			case 1:
 				timer = time.After(s.config.BatchDelay)
+				log.V(4).Infof("starting timer now, batch delay: %v", s.config.BatchDelay)
 			case s.config.BatchSize:
+				log.V(4).Infof("batch size reached sending %d notifications", len(s.batch))
 				err = s.send()
 				timer = nil
 			}
 
 		case <-timer:
+			log.V(4).Infof("expired timer sending %d notifications", len(s.batch))
 			err = s.send()
 		}
 

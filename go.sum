@@ -1,0 +1,13 @@
+github.com/dlintw/goconf v0.0.0-20120228082610-dcc070983490 h1:I8/Qu5NTaiXi1TsEYmTeLDUlf7u9pEdbG+azjDvx8Vg=
+github.com/dlintw/goconf v0.0.0-20120228082610-dcc070983490/go.mod h1:jWlUIP63OLr0cV2FGN2IEzSFsMAe58if8rk/SAE0JRE=
+github.com/golang/glog v0.0.0-20141105023935-44145f04b68c h1:CbdkBQ1/PiAo0FYJhQGwASD8wrgNvTdf01g6+O9tNuA=
+github.com/golang/glog v0.0.0-20141105023935-44145f04b68c/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
+github.com/golang/protobuf v0.0.0-20160608215545-8616e8ee5e20 h1:JjXLa2agJIe5O/7gydg1V7GI847H1+DTOoFmjKNDE7I=
+github.com/golang/protobuf v0.0.0-20160608215545-8616e8ee5e20/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
+github.com/kylelemons/godebug v0.0.0-20161109210102-d99083b96f42 h1:o7Saf1pjJ1Bbr21nfO1XqqhwOypzgbleFBXDDYlVrNg=
+github.com/kylelemons/godebug v0.0.0-20161109210102-d99083b96f42/go.mod h1:B69LEHPfb2qLo0BaaOLcbitczOKLWTsrBG9LczfCD4k=
+github.com/miekg/dns v0.0.0-20170104075554-ca336a1f95a6 h1:mofNVQ+HndmHGwlt3bObFpuOc82rdypdwPn73flXSag=
+github.com/miekg/dns v0.0.0-20170104075554-ca336a1f95a6/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
+golang.org/x/crypto v0.0.0-20160126184038-1f22c0103821 h1:Ufz3iUGlZbo8uCQ3IddvmNoW0T2XwdZqjVpOrdtyO0c=
+golang.org/x/crypto v0.0.0-20160126184038-1f22c0103821/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
+golang.org/x/sys v0.0.0-20160916181909-8f0908ab3b24/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
